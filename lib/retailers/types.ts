@@ -7,6 +7,7 @@ export interface RetailerConnector {
   mode: "mock" | "live";
   sampleData: boolean;
   checkoutUrl: string;
+  productSearchUrl(itemName: string): string | null;
   getDeliverySlots(): DeliverySlot[];
   createQuote(items: GroceryItem[]): BasketQuote;
 }

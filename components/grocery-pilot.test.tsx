@@ -44,6 +44,8 @@ describe("GroceryPilot catalogue", () => {
     expect(screen.getByRole("dialog", { name: "Review Tesco" })).toBeInTheDocument();
     expect(screen.getByText("Mock connection")).toBeInTheDocument();
     expect(screen.getByText(/This quote is not from Tesco/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy shopping list" })).toBeInTheDocument();
+    expect(screen.getAllByRole("link", { name: /Find at Tesco/ })).toHaveLength(4);
     expect(screen.getByRole("button", { name: "Sign in to continue" })).toBeDisabled();
   });
 });

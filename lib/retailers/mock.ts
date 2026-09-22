@@ -17,6 +17,9 @@ export function createMockConnector(id: RetailerId): RetailerConnector {
     mode: "mock",
     sampleData: true,
     checkoutUrl: checkoutUrls[id],
+    productSearchUrl: (itemName) => id === "tesco"
+      ? `https://www.tesco.ie/shop/en-IE/search?query=${encodeURIComponent(itemName)}`
+      : null,
     getDeliverySlots: () => [
       { id: "preferred", label: retailer.deliveryLabel },
       { id: "following-day", label: "Following day, 10:00–12:00" },

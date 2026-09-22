@@ -22,6 +22,7 @@ export function GroceryPilot() {
   const [checkoutBusy, setCheckoutBusy] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [handoff, setHandoff] = useState<{ orderId: string; url: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const [quoteCapturedAt, setQuoteCapturedAt] = useState<Date | null>(null);
   const restoreSavedList = useCallback((data: { eircode: string; items: GroceryItem[] }) => {
     setEircode(data.eircode);
@@ -63,8 +64,26 @@ export function GroceryPilot() {
     setDeliverySlotId("preferred");
     setCheckoutError("");
     setHandoff(null);
+    setCopied(false);
     setQuoteCapturedAt(new Date());
     setCheckoutOpen(true);
+  }
+
+  async function copyAssistedList() {
+    if (!reviewQuote) return;
+    const lines = reviewQuote.lines.map((line) => {
+      const substitution = line.item.substitution === "exact" ? "exact item only" : line.item.substitution === "none" ? "no substitute" : "similar substitute allowed";
+      return `${line.item.quantity} × ${line.item.name} (${line.item.packageDescription}; ${substitution})`;
+    });
+    await navigator.clipboard.writeText([
+      `${reviewQuote.retailer.name} grocery list`,
+      `Delivery area: ${eircode}`,
+      "",
+      ...lines,
+      "",
+      "Check live prices, availability and delivery charges in the retailer checkout.",
+    ].join("\n"));
+    setCopied(true);
   }
 
   async function startCheckout() {
@@ -188,7 +207,11 @@ export function GroceryPilot() {
             <div><span>Quote expires</span><strong>{quoteCapturedAt && new Date(quoteCapturedAt.getTime() + 15 * 60 * 1000).toLocaleTimeString("en-IE", { hour: "2-digit", minute: "2-digit" })}</strong></div>
           </div>
           <label className="slot-picker">Preferred delivery window<select value={deliverySlotId} onChange={(event) => setDeliverySlotId(event.target.value)}>{reviewConnector.getDeliverySlots().map((slot) => <option value={slot.id} key={slot.id}>{slot.label}</option>)}</select></label>
-          <div className="review-lines">{reviewQuote.lines.map((line) => <div key={line.item.id}><span>{line.item.quantity} × {line.item.name}<small>{line.item.substitution === "exact" ? "Exact only" : line.item.substitution === "none" ? "No substitution" : "Similar substitute allowed"}</small></span><strong>{line.status === "missing" ? "Unavailable" : euro.format(line.lineTotal)}</strong></div>)}</div>
+          <div className="assisted-tools"><div><strong>Assisted checkout</strong><span>Copy the list, then add each product yourself in the retailer&apos;s website.</span></div><button onClick={copyAssistedList}>{copied ? "List copied ✓" : "Copy shopping list"}</button></div>
+          <div className="review-lines">{reviewQuote.lines.map((line) => {
+            const searchUrl = reviewConnector.productSearchUrl(line.item.name);
+            return <div key={line.item.id}><span>{line.item.quantity} × {line.item.name}<small>{line.item.substitution === "exact" ? "Exact only" : line.item.substitution === "none" ? "No substitution" : "Similar substitute allowed"}</small></span><div className="review-line-action"><strong>{line.status === "missing" ? "Unavailable" : euro.format(line.lineTotal)}</strong>{searchUrl && <a href={searchUrl} target="_blank" rel="noreferrer">Find at {reviewQuote.retailer.name} ↗</a>}</div></div>;
+          })}</div>
           {!signedIn && <p className="checkout-auth">Sign in from the top of the page before starting checkout. This keeps an audit trail tied to your account.</p>}
           {checkoutError && <p className="form-error" role="alert">{checkoutError}</p>}
           {handoff ? <div className="handoff-result"><strong>Checkout attempt recorded</strong><span>Reference {handoff.orderId.slice(-8)}. Your basket cannot yet be transferred.</span><a href={handoff.url} target="_blank" rel="noreferrer">Open {reviewQuote.retailer.name} to shop manually ↗</a></div> : <button className="checkout-button" onClick={startCheckout} disabled={!signedIn || checkoutBusy}>{checkoutBusy ? "Recording checkout…" : signedIn ? "Record checkout & continue" : "Sign in to continue"}</button>}

@@ -45,6 +45,12 @@ button { cursor: pointer; }
 .review-lines > div:last-child { border-bottom: 0; }
 .review-lines span { display: grid; gap: 2px; font-weight: 700; }
 .review-lines small { color: var(--muted); font-size: 10px; font-weight: 400; }
+.assisted-tools { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 18px 0 10px; border-radius: 12px; background: #eef2e9; padding: 13px 15px; }
+.assisted-tools div { display: grid; gap: 3px; }
+.assisted-tools span { color: var(--muted); font-size: 10px; }
+.assisted-tools button { flex: none; border: 1px solid var(--green); border-radius: 9px; background: white; color: var(--green); padding: 9px 11px; font-size: 11px; font-weight: 800; }
+.review-line-action { display: grid; justify-items: end; gap: 3px; }
+.review-line-action a { color: var(--green); font-size: 10px; font-weight: 800; }
 .checkout-auth, .card-safety { color: var(--muted); font-size: 11px; line-height: 1.5; }
 .checkout-auth { border-radius: 9px; background: #eef2e9; padding: 12px; }
 .checkout-button { width: 100%; border: 0; border-radius: 11px; background: var(--green); color: white; padding: 14px; font-weight: 800; }
@@ -204,6 +210,7 @@ footer p { margin: 0; }
   .checkout-modal { padding: 30px 20px; }
   .checkout-heading { display: grid; }
   .checkout-summary { grid-template-columns: repeat(2, 1fr); }
+  .assisted-tools { align-items: stretch; flex-direction: column; }
   .hero { min-height: auto; padding-bottom: 60px; }
   h1 { font-size: 47px; }
   .location-row { align-items: start; flex-direction: column; gap: 8px; }

@@ -29,7 +29,7 @@ The detailed product, safety, integration, and delivery plan is in [docs/product
 
 ## Prototype status
 
-The application includes an editable weekly list, a searchable meat-free catalogue with sample Tesco and SuperValu listings, product artwork, category and retailer filters, delivered-cost calculations, secure database-backed accounts and sessions, persistent Eircodes and lists, a PostgreSQL/Prisma data layer, a retailer connector boundary, timestamped checkout review, persisted checkout attempts, tests, and GitHub Actions CI.
+The application includes an editable weekly list, a searchable meat-free catalogue with sample Tesco and SuperValu listings, product artwork, category and retailer filters, delivered-cost calculations, secure database-backed accounts and sessions, persistent Eircodes and lists, a PostgreSQL/Prisma data layer, a retailer connector boundary, timestamped checkout review, an assisted-checkout fallback with copyable lists and supported retailer search links, persisted checkout attempts, tests, and GitHub Actions CI.
 
 All retailer prices, availability, fees, and delivery slots in the prototype are sample data. Checkout attempts are recorded for testing, but no baskets, orders, card details, or payments are submitted to a retailer.
 
