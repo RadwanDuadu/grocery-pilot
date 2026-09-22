@@ -27,14 +27,37 @@ The first pilot should target Tesco and SuperValu in one Irish delivery area. Al
 
 The detailed product, safety, integration, and delivery plan is in [docs/product-plan.md](docs/product-plan.md).
 
-## Status
+## Prototype status
 
-Planning and retailer-integration validation.
+The first comparison prototype is implemented. It includes an editable weekly list, sample Tesco and SuperValu catalogues, delivered-cost calculations, missing-essential ranking, a PostgreSQL-ready Prisma schema, tests, and GitHub Actions CI.
+
+All retailer prices, availability, fees, and delivery slots in the prototype are sample data. No orders or payments are submitted.
+
+## Run locally
+
+Requirements: Node.js 22 and npm.
+
+```bash
+npm install --legacy-peer-deps
+npm run dev
+```
+
+Open `http://localhost:3000`.
+
+Verification commands:
+
+```bash
+npm run typecheck
+npm test
+npm run build
+```
+
+Copy `.env.example` to `.env` before connecting a PostgreSQL database. The interactive prototype currently uses deterministic sample data, so a database is not required to view it.
 
 ## Next steps
 
 1. Select the initial delivery area.
 2. Confirm commercial/API access with Tesco and SuperValu.
-3. Interview prospective users and validate the conversation flow.
-4. Build a comparison-only prototype before enabling purchasing.
-
+3. Connect PostgreSQL and persist household grocery lists.
+4. Add authentication and secure household accounts.
+5. Interview prospective users and validate the comparison flow.

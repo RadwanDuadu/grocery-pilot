@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ItemPriority {
+  ESSENTIAL
+  OPTIONAL
+}
+
+enum SubstitutionPolicy {
+  ALLOW_SIMILAR
+  EXACT_ONLY
+  NO_SUBSTITUTION
+}
+
+enum QuoteStatus {
+  DRAFT
+  READY
+  EXPIRED
+  SELECTED
+}
+
+model User {
+  id        String        @id @default(cuid())
+  email     String        @unique
+  name      String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  addresses Address[]
+  lists     GroceryList[]
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  label     String   @default("Home")
+  eircode   String
+  line1     String?
+  city      String?
+  isDefault Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GroceryList {
+  id        String            @id @default(cuid())
+  name      String
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     GroceryListItem[]
+  quotes    BasketQuote[]
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model GroceryListItem {
+  id                 String             @id @default(cuid())
+  name               String
+  category           String
+  quantity           Int                @default(1)
+  preferredBrand     String?
+  packageDescription String?
+  maxUnitPrice       Decimal?           @db.Decimal(10, 2)
+  priority           ItemPriority       @default(ESSENTIAL)
+  substitutionPolicy SubstitutionPolicy @default(ALLOW_SIMILAR)
+  listId             String
+  list               GroceryList        @relation(fields: [listId], references: [id], onDelete: Cascade)
+  quoteLines         BasketQuoteLine[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+}
+
+model Retailer {
+  id           String            @id @default(cuid())
+  slug         String            @unique
+  name         String
+  products     RetailerProduct[]
+  basketQuotes BasketQuote[]
+}
+
+model RetailerProduct {
+  id                 String   @id @default(cuid())
+  externalId         String
+  name               String
+  category           String
+  brand              String?
+  packageDescription String
+  unitPrice          Decimal  @db.Decimal(10, 2)
+  available          Boolean  @default(true)
+  sampleData         Boolean  @default(true)
+  retailerId         String
+  retailer           Retailer @relation(fields: [retailerId], references: [id], onDelete: Cascade)
+  quoteLines         BasketQuoteLine[]
+  updatedAt          DateTime @updatedAt
+
+  @@unique([retailerId, externalId])
+}
+
+model BasketQuote {
+  id              String            @id @default(cuid())
+  status          QuoteStatus       @default(DRAFT)
+  subtotal        Decimal           @db.Decimal(10, 2)
+  deliveryFee     Decimal           @db.Decimal(10, 2)
+  serviceFee      Decimal           @db.Decimal(10, 2)
+  minimumSurcharge Decimal          @db.Decimal(10, 2)
+  total           Decimal           @db.Decimal(10, 2)
+  expiresAt       DateTime
+  sampleData      Boolean           @default(true)
+  listId          String
+  list            GroceryList       @relation(fields: [listId], references: [id], onDelete: Cascade)
+  retailerId      String
+  retailer        Retailer          @relation(fields: [retailerId], references: [id])
+  lines           BasketQuoteLine[]
+  createdAt       DateTime           @default(now())
+}
+
+model BasketQuoteLine {
+  id              String            @id @default(cuid())
+  quantity        Int
+  unitPrice       Decimal?          @db.Decimal(10, 2)
+  lineTotal       Decimal?          @db.Decimal(10, 2)
+  matchConfidence Float?
+  missing         Boolean           @default(false)
+  substituted     Boolean           @default(false)
+  quoteId         String
+  quote           BasketQuote       @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  listItemId      String
+  listItem        GroceryListItem   @relation(fields: [listItemId], references: [id])
+  productId       String?
+  product         RetailerProduct?  @relation(fields: [productId], references: [id])
+}
