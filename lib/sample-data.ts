@@ -20,9 +20,6 @@ const rows: CatalogueRow[] = [
   { id: "potatoes", name: "Rooster potatoes", category: "Fruit & vegetables", quantity: 1, packageDescription: "2kg bag", essential: false, substitution: "similar", imageKey: "bananas", tescoPrice: 3.49, supervaluPrice: 3.29 },
   { id: "onions", name: "Brown onions", category: "Fruit & vegetables", quantity: 1, packageDescription: "1kg bag", essential: false, substitution: "similar", imageKey: "bananas", tescoPrice: 1.45, supervaluPrice: 1.55 },
   { id: "broccoli", name: "Fresh broccoli", category: "Fruit & vegetables", quantity: 1, packageDescription: "Each", essential: false, substitution: "similar", imageKey: "bananas", tescoPrice: 1.19, supervaluPrice: 1.25 },
-  { id: "mince", name: "Lean beef mince", category: "Meat", quantity: 1, packageDescription: "500g", essential: true, substitution: "similar", imageKey: "mince", tescoPrice: 5.25, supervaluPrice: 5.49, unavailableAt: "supervalu" },
-  { id: "chicken", name: "Chicken breast fillets", category: "Meat", quantity: 1, packageDescription: "600g", essential: false, substitution: "similar", imageKey: "mince", tescoPrice: 6.5, supervaluPrice: 6.79 },
-  { id: "sausages", name: "Irish pork sausages", category: "Meat", quantity: 1, packageDescription: "8 pack", essential: false, substitution: "similar", imageKey: "mince", tescoPrice: 3.0, supervaluPrice: 3.25 },
   { id: "toothpaste", name: "Fluoride toothpaste", category: "Household", quantity: 1, packageDescription: "100ml", essential: false, substitution: "similar", imageKey: "toothpaste", tescoPrice: 2.5, supervaluPrice: 2.25 },
   { id: "washing-liquid", name: "Washing-up liquid", category: "Household", quantity: 1, packageDescription: "450ml", essential: false, substitution: "similar", imageKey: "toothpaste", tescoPrice: 1.75, supervaluPrice: 1.89 },
   { id: "toilet-roll", name: "Toilet tissue", category: "Household", quantity: 1, packageDescription: "9 rolls", essential: false, substitution: "similar", imageKey: "toothpaste", tescoPrice: 5.75, supervaluPrice: 5.99 },
@@ -38,7 +35,7 @@ export const availableItems: GroceryItem[] = rows.map(({ tescoPrice: _tesco, sup
 
 export const starterItems: GroceryItem[] = [
   { ...availableItems.find((item) => item.id === "milk")!, quantity: 2 },
-  ...["bread", "eggs", "bananas", "mince"].map((id) => ({ ...availableItems.find((item) => item.id === id)! })),
+  ...["bread", "eggs", "bananas"].map((id) => ({ ...availableItems.find((item) => item.id === id)! })),
 ];
 
 export const retailers: RetailerPolicy[] = [

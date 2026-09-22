@@ -23,7 +23,14 @@ describe("GroceryPilot catalogue", () => {
     expect(addButton).toBeTruthy();
     fireEvent.click(addButton!);
 
-    expect(screen.getByText("6 items")).toBeInTheDocument();
+    expect(screen.getByText("5 items")).toBeInTheDocument();
     expect(addButton).toBeDisabled();
+  });
+
+  it("does not expose meat products or a meat category", () => {
+    render(<GroceryPilot />);
+
+    expect(screen.queryByRole("button", { name: "Meat" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/beef|chicken|sausages/i)).not.toBeInTheDocument();
   });
 });

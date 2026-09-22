@@ -94,7 +94,7 @@ export function GroceryPilot() {
       </section>
 
       <section className="catalogue-section" id="catalogue">
-        <div className="section-heading catalogue-heading"><div><p className="eyebrow">24 everyday products · 48 store listings</p><h2>Search the catalogue</h2></div><span className="result-count">{searchResults.length} results</span></div>
+        <div className="section-heading catalogue-heading"><div><p className="eyebrow">{availableItems.length} everyday products · {sampleCatalogue.length} store listings</p><h2>Search the catalogue</h2></div><span className="result-count">{searchResults.length} results</span></div>
         <div className="catalogue-tools">
           <label className="search-box"><span aria-hidden="true">⌕</span><input value={search} onInput={(event) => setSearch(event.currentTarget.value)} placeholder="Search milk, bread, coffee…" aria-label="Search grocery catalogue" />{search && <button onClick={() => setSearch("")} aria-label="Clear search">×</button>}</label>
           <div className="store-tabs" aria-label="Filter by retailer">{(["all", "tesco", "supervalu"] as const).map((store) => <button key={store} className={storeFilter === store ? "active" : ""} onClick={() => setStoreFilter(store)}>{store === "all" ? "All stores" : store === "tesco" ? "Tesco" : "SuperValu"}</button>)}</div>
