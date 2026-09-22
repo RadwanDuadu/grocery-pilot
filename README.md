@@ -74,3 +74,7 @@ Copy `.env.example` to `.env` before starting. Without PostgreSQL the comparison
 3. Interview prospective users and validate the account and saved-list flow.
 4. Add email verification and password-reset delivery before public launch.
 5. Replace the sample catalogue with approved retailer data.
+
+## Tesco Ireland local agent
+
+An experimental local MCP server can search Tesco Ireland and prepare a basket through a dedicated visible Chrome profile. It defaults to dry-run, enforces a product budget, keeps retailer credentials and card details out of Grocery Pilot, and cannot press the final purchase button. See [docs/tesco-agent.md](docs/tesco-agent.md).

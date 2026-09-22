@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 node_modules/
+.grocery-pilot/
 .next/
 dist/
 coverage/
