@@ -2,7 +2,7 @@ import "server-only";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/generated/prisma/client";
 
-const connectionString = process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/grocery_pilot";
+const connectionString = process.env.DATABASE_URL ?? "postgresql://grocery_pilot:grocery_pilot_dev@localhost:5432/grocery_pilot";
 const globalForPrisma = globalThis as unknown as { groceryPilotPrisma?: PrismaClient };
 
 export const db =

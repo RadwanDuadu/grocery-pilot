@@ -5,6 +5,6 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: { path: "prisma/migrations" },
   datasource: {
-    url: process.env.DATABASE_URL ?? "postgresql://postgres:postgres@localhost:5432/grocery_pilot",
+    url: process.env.DATABASE_URL ?? "postgresql://grocery_pilot:grocery_pilot_dev@localhost:5432/grocery_pilot",
   },
 });

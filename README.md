@@ -37,10 +37,21 @@ All retailer prices, availability, fees, and delivery slots in the prototype are
 
 Requirements: Node.js 22, npm, and PostgreSQL 17. A Docker Compose file is included for environments with Docker.
 
+On macOS with Homebrew:
+
+```bash
+brew install postgresql@17
+brew services start postgresql@17
+/opt/homebrew/opt/postgresql@17/bin/psql -d postgres -c "CREATE ROLE grocery_pilot WITH LOGIN PASSWORD 'grocery_pilot_dev';"
+/opt/homebrew/opt/postgresql@17/bin/createdb --owner=grocery_pilot grocery_pilot
+```
+
+The included credentials are for local development only. Use a secret-managed, randomly generated password in staging and production.
+
 ```bash
 npm install --legacy-peer-deps
 npm run db:generate
-npm run db:migrate
+npx prisma migrate deploy
 npm run dev
 ```
 
