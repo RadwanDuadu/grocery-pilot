@@ -29,16 +29,18 @@ The detailed product, safety, integration, and delivery plan is in [docs/product
 
 ## Prototype status
 
-The first comparison prototype is implemented. It includes an editable weekly list, a searchable meat-free catalogue with sample Tesco and SuperValu listings, product artwork, category and retailer filters, delivered-cost calculations, missing-essential ranking, a PostgreSQL-ready Prisma schema, tests, and GitHub Actions CI.
+The application includes an editable weekly list, a searchable meat-free catalogue with sample Tesco and SuperValu listings, product artwork, category and retailer filters, delivered-cost calculations, secure database-backed accounts and sessions, persistent Eircodes and lists, a PostgreSQL/Prisma data layer, tests, and GitHub Actions CI.
 
 All retailer prices, availability, fees, and delivery slots in the prototype are sample data. No orders or payments are submitted.
 
 ## Run locally
 
-Requirements: Node.js 22 and npm.
+Requirements: Node.js 22, npm, and PostgreSQL 17. A Docker Compose file is included for environments with Docker.
 
 ```bash
 npm install --legacy-peer-deps
+npm run db:generate
+npm run db:migrate
 npm run dev
 ```
 
@@ -52,12 +54,12 @@ npm test
 npm run build
 ```
 
-Copy `.env.example` to `.env` before connecting a PostgreSQL database. The interactive prototype currently uses deterministic sample data, so a database is not required to view it.
+Copy `.env.example` to `.env` before starting. Without PostgreSQL the comparison demo remains available, but registration, sign-in, and saved lists return a clear database-setup message.
 
 ## Next steps
 
 1. Select the initial delivery area.
 2. Confirm commercial/API access with Tesco and SuperValu.
-3. Connect PostgreSQL and persist household grocery lists.
-4. Add authentication and secure household accounts.
-5. Interview prospective users and validate the comparison flow.
+3. Interview prospective users and validate the account and saved-list flow.
+4. Add email verification and password-reset delivery before public launch.
+5. Replace the sample catalogue with approved retailer data.

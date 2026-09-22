@@ -29,10 +29,24 @@ model User {
   id        String        @id @default(cuid())
   email     String        @unique
   name      String?
+  passwordHash String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   addresses Address[]
   lists     GroceryList[]
+  sessions  Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  expiresAt DateTime
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Address {
@@ -66,6 +80,8 @@ model GroceryListItem {
   quantity           Int                @default(1)
   preferredBrand     String?
   packageDescription String?
+  catalogueItemId    String?
+  imageKey            String?
   maxUnitPrice       Decimal?           @db.Decimal(10, 2)
   priority           ItemPriority       @default(ESSENTIAL)
   substitutionPolicy SubstitutionPolicy @default(ALLOW_SIMILAR)

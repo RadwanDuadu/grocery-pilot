@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useCallback } from "react";
+import { AccountPanel } from "@/components/account-panel";
 import { buildQuote, rankQuotes } from "@/lib/comparison";
 import { availableItems, retailers, sampleCatalogue, starterItems } from "@/lib/sample-data";
 import type { GroceryItem, ProductImageKey, RetailerId } from "@/lib/types";
@@ -14,6 +16,10 @@ export function GroceryPilot() {
   const [category, setCategory] = useState("All");
   const [storeFilter, setStoreFilter] = useState<"all" | RetailerId>("all");
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
+  const restoreSavedList = useCallback((data: { eircode: string; items: GroceryItem[] }) => {
+    setEircode(data.eircode);
+    setItems(data.items);
+  }, []);
 
   const quotes = useMemo(
     () => rankQuotes(retailers.map((retailer) => buildQuote(retailer, items, sampleCatalogue))),
@@ -49,7 +55,7 @@ export function GroceryPilot() {
     <main>
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Grocery Pilot home"><span className="brand-mark" aria-hidden="true">GP</span><span>Grocery Pilot</span></a>
-        <span className="pilot-badge">Private prototype</span>
+        <div className="topbar-actions"><span className="pilot-badge">Private prototype</span><AccountPanel eircode={eircode} items={items} onRestore={restoreSavedList} /></div>
       </header>
 
       <section className="hero" id="top">
