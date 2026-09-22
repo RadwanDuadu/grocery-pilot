@@ -29,7 +29,7 @@ The detailed product, safety, integration, and delivery plan is in [docs/product
 
 ## Prototype status
 
-The first comparison prototype is implemented. It includes an editable weekly list, sample Tesco and SuperValu catalogues, delivered-cost calculations, missing-essential ranking, a PostgreSQL-ready Prisma schema, tests, and GitHub Actions CI.
+The first comparison prototype is implemented. It includes an editable weekly list, a searchable 24-product catalogue with 48 sample Tesco and SuperValu listings, product artwork, category and retailer filters, delivered-cost calculations, missing-essential ranking, a PostgreSQL-ready Prisma schema, tests, and GitHub Actions CI.
 
 All retailer prices, availability, fees, and delivery slots in the prototype are sample data. No orders or payments are submitted.
 

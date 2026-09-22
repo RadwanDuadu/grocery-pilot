@@ -6,7 +6,10 @@ export type GroceryItem = {
   packageDescription: string;
   essential: boolean;
   substitution: "similar" | "exact" | "none";
+  imageKey: ProductImageKey;
 };
+
+export type ProductImageKey = "milk" | "bread" | "eggs" | "bananas" | "mince" | "toothpaste" | "coffee" | "pasta";
 
 export type CatalogueProduct = {
   id: string;
