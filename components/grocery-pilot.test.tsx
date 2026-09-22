@@ -1,6 +1,8 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { GroceryPilot } from "./grocery-pilot";
+
+afterEach(cleanup);
 
 describe("GroceryPilot catalogue", () => {
   it("filters products from the search bar", () => {
@@ -32,5 +34,16 @@ describe("GroceryPilot catalogue", () => {
 
     expect(screen.queryByRole("button", { name: "Meat" })).not.toBeInTheDocument();
     expect(screen.queryByText(/beef|chicken|sausages/i)).not.toBeInTheDocument();
+  });
+
+  it("opens a clearly labelled mock checkout review", () => {
+    render(<GroceryPilot />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Review Tesco basket" }));
+
+    expect(screen.getByRole("dialog", { name: "Review Tesco" })).toBeInTheDocument();
+    expect(screen.getByText("Mock connection")).toBeInTheDocument();
+    expect(screen.getByText(/This quote is not from Tesco/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign in to continue" })).toBeDisabled();
   });
 });

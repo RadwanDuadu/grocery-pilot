@@ -29,6 +29,29 @@ button { cursor: pointer; }
 .account-toast { position: fixed; right: 20px; top: 88px; z-index: 40; max-width: 360px; padding: 12px 16px; border-radius: 10px; background: #fce9df; color: #8f3f20; box-shadow: 0 10px 30px rgba(23,53,45,.15); font-size: 12px; font-weight: 700; }
 .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(10,35,27,.62); backdrop-filter: blur(7px); }
 .account-modal { position: relative; width: min(460px, 100%); border-radius: 24px; background: var(--paper); padding: 36px; box-shadow: 0 30px 90px rgba(8,29,23,.3); }
+.checkout-modal { position: relative; width: min(720px, 100%); max-height: min(850px, 92vh); overflow: auto; border-radius: 24px; background: var(--paper); padding: 34px; box-shadow: 0 30px 90px rgba(8,29,23,.3); }
+.checkout-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; padding-right: 35px; }
+.checkout-heading h2 { font-size: 38px; }
+.mock-badge { white-space: nowrap; border-radius: 99px; background: #fce9df; color: #91441f; padding: 8px 11px; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .07em; }
+.checkout-warning { display: grid; gap: 3px; margin: 22px 0; border-left: 4px solid var(--orange); border-radius: 8px; background: #fff4ed; padding: 13px 15px; color: #804124; font-size: 12px; }
+.checkout-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--line); }
+.checkout-summary div { display: grid; gap: 4px; background: white; padding: 14px; }
+.checkout-summary span { color: var(--muted); font-size: 10px; }
+.checkout-summary strong { font-size: 13px; }
+.slot-picker { display: grid; gap: 7px; margin: 20px 0; color: var(--ink); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.slot-picker select { width: 100%; border: 1px solid var(--line); border-radius: 10px; background: white; padding: 12px; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.review-lines { max-height: 230px; overflow: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.review-lines > div { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 11px 3px; border-bottom: 1px solid #edf0ed; font-size: 13px; }
+.review-lines > div:last-child { border-bottom: 0; }
+.review-lines span { display: grid; gap: 2px; font-weight: 700; }
+.review-lines small { color: var(--muted); font-size: 10px; font-weight: 400; }
+.checkout-auth, .card-safety { color: var(--muted); font-size: 11px; line-height: 1.5; }
+.checkout-auth { border-radius: 9px; background: #eef2e9; padding: 12px; }
+.checkout-button { width: 100%; border: 0; border-radius: 11px; background: var(--green); color: white; padding: 14px; font-weight: 800; }
+.checkout-button:disabled { opacity: .5; cursor: not-allowed; }
+.card-safety { margin: 10px 0 0; text-align: center; }
+.handoff-result { display: grid; gap: 7px; margin-top: 18px; border-radius: 12px; background: var(--mint); padding: 16px; color: var(--green-dark); font-size: 12px; }
+.handoff-result a { justify-self: start; color: var(--green-dark); font-weight: 900; }
 .account-modal h2 { font-size: 34px; }
 .modal-close { position: absolute; right: 18px; top: 15px; width: 34px; height: 34px; border: 0; border-radius: 50%; background: #edf0ea; color: var(--ink); font-size: 22px; }
 .modal-intro { margin: 13px 0 24px; color: var(--muted); font-size: 14px; line-height: 1.55; }
@@ -178,6 +201,9 @@ footer p { margin: 0; }
   .topbar { padding-left: 16px; padding-right: 16px; }
   .brand { font-size: 17px; }
   .account-modal { padding: 30px 22px; }
+  .checkout-modal { padding: 30px 20px; }
+  .checkout-heading { display: grid; }
+  .checkout-summary { grid-template-columns: repeat(2, 1fr); }
   .hero { min-height: auto; padding-bottom: 60px; }
   h1 { font-size: 47px; }
   .location-row { align-items: start; flex-direction: column; gap: 8px; }

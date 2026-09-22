@@ -25,6 +25,15 @@ enum QuoteStatus {
   SELECTED
 }
 
+enum RetailOrderStatus {
+  DRAFT
+  CHECKOUT_STARTED
+  CONFIRMED
+  PICKING
+  DELIVERED
+  CANCELLED
+}
+
 model User {
   id        String        @id @default(cuid())
   email     String        @unique
@@ -35,6 +44,7 @@ model User {
   addresses Address[]
   lists     GroceryList[]
   sessions  Session[]
+  orders    RetailOrder[]
 }
 
 model Session {
@@ -98,6 +108,35 @@ model Retailer {
   name         String
   products     RetailerProduct[]
   basketQuotes BasketQuote[]
+  orders       RetailOrder[]
+}
+
+model RetailOrder {
+  id                 String            @id @default(cuid())
+  status             RetailOrderStatus @default(CHECKOUT_STARTED)
+  provider           String
+  externalOrderId    String?
+  checkoutUrl        String
+  deliveryEircode    String
+  deliverySlot       String
+  subtotal           Decimal           @db.Decimal(10, 2)
+  deliveryFee        Decimal           @db.Decimal(10, 2)
+  minimumSurcharge   Decimal           @db.Decimal(10, 2)
+  estimatedTotal     Decimal           @db.Decimal(10, 2)
+  quoteCapturedAt    DateTime
+  quoteExpiresAt     DateTime
+  sampleData         Boolean           @default(true)
+  substitutionReview Json
+  basketSnapshot     Json
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  retailerId         String
+  retailer           Retailer          @relation(fields: [retailerId], references: [id])
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([retailerId])
 }
 
 model RetailerProduct {

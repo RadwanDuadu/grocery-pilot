@@ -25,3 +25,10 @@ export const savedListSchema = z.object({
   listName: z.string().trim().min(1).max(80).default("Weekly groceries"),
   items: z.array(savedItemSchema).max(200),
 });
+
+export const checkoutHandoffSchema = z.object({
+  retailerId: z.enum(["tesco", "supervalu"]),
+  eircode: z.string().trim().toUpperCase().min(3).max(10),
+  deliverySlotId: z.enum(["preferred", "following-day"]),
+  items: z.array(savedItemSchema).min(1).max(200),
+});

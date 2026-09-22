@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { AccountPanel } from "@/components/account-panel";
 import { buildQuote, rankQuotes } from "@/lib/comparison";
 import { availableItems, retailers, sampleCatalogue, starterItems } from "@/lib/sample-data";
 import type { GroceryItem, ProductImageKey, RetailerId } from "@/lib/types";
+import { getRetailerConnector } from "@/lib/retailers";
 
 const euro = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" });
 
@@ -16,6 +16,13 @@ export function GroceryPilot() {
   const [category, setCategory] = useState("All");
   const [storeFilter, setStoreFilter] = useState<"all" | RetailerId>("all");
   const [selectedRetailer, setSelectedRetailer] = useState<string | null>(null);
+  const [signedIn, setSignedIn] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [deliverySlotId, setDeliverySlotId] = useState("preferred");
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [handoff, setHandoff] = useState<{ orderId: string; url: string } | null>(null);
+  const [quoteCapturedAt, setQuoteCapturedAt] = useState<Date | null>(null);
   const restoreSavedList = useCallback((data: { eircode: string; items: GroceryItem[] }) => {
     setEircode(data.eircode);
     setItems(data.items);
@@ -51,11 +58,43 @@ export function GroceryPilot() {
     setSelectedRetailer(null);
   }
 
+  function reviewBasket(retailerId: RetailerId) {
+    setSelectedRetailer(retailerId);
+    setDeliverySlotId("preferred");
+    setCheckoutError("");
+    setHandoff(null);
+    setQuoteCapturedAt(new Date());
+    setCheckoutOpen(true);
+  }
+
+  async function startCheckout() {
+    if (!selectedRetailer) return;
+    setCheckoutBusy(true);
+    setCheckoutError("");
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ retailerId: selectedRetailer, eircode, deliverySlotId, items }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error ?? "Unable to start checkout.");
+      setHandoff({ orderId: data.order.id, url: data.handoff.url });
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "Unable to start checkout.");
+    } finally {
+      setCheckoutBusy(false);
+    }
+  }
+
+  const reviewQuote = quotes.find((quote) => quote.retailer.id === selectedRetailer);
+  const reviewConnector = selectedRetailer ? getRetailerConnector(selectedRetailer as RetailerId) : null;
+
   return (
     <main>
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Grocery Pilot home"><span className="brand-mark" aria-hidden="true">GP</span><span>Grocery Pilot</span></a>
-        <div className="topbar-actions"><span className="pilot-badge">Private prototype</span><AccountPanel eircode={eircode} items={items} onRestore={restoreSavedList} /></div>
+        <div className="topbar-actions"><span className="pilot-badge">Private prototype</span><AccountPanel eircode={eircode} items={items} onRestore={restoreSavedList} onUserChange={setSignedIn} /></div>
       </header>
 
       <section className="hero" id="top">
@@ -128,11 +167,34 @@ export function GroceryPilot() {
             <div className="completeness"><div><span>{quote.matchedCount} of {items.length} items matched</span><strong>{quote.completeness}%</strong></div><div className="progress"><i style={{ width: `${quote.completeness}%` }} /></div></div>
             <div className="fee-list"><div><span>Products</span><strong>{euro.format(quote.subtotal)}</strong></div><div><span>Delivery</span><strong>{euro.format(quote.deliveryFee)}</strong></div>{quote.minimumSurcharge > 0 && <div className="fee-warning"><span>Small basket charge</span><strong>{euro.format(quote.minimumSurcharge)}</strong></div>}<div><span>Next slot</span><strong>{quote.retailer.deliveryLabel}</strong></div></div>
             {quote.missingCount > 0 ? <div className="missing-alert"><strong>{quote.missingCount} item unavailable</strong><span>{quote.lines.filter((line) => line.status === "missing").map((line) => line.item.name).join(", ")}</span></div> : <div className="complete-alert">✓ Every item is available</div>}
-            <button className={`select-button ${selectedRetailer === quote.retailer.id ? "selected" : ""}`} onClick={() => setSelectedRetailer(quote.retailer.id)}>{selectedRetailer === quote.retailer.id ? "Selected for review ✓" : `Review ${quote.retailer.name} basket`}</button>
+            <button className={`select-button ${selectedRetailer === quote.retailer.id ? "selected" : ""}`} onClick={() => reviewBasket(quote.retailer.id)}>{selectedRetailer === quote.retailer.id ? "Review basket again" : `Review ${quote.retailer.name} basket`}</button>
           </article>
         ))}</div>
-        <p className="prototype-footnote">No order will be placed. Live retailer integrations and payment are deliberately excluded from this prototype.</p>
+        <p className="prototype-footnote">Checkout attempts can now be recorded, but baskets, payments and orders are not transferred until an approved retailer connection is enabled.</p>
       </section>
+
+      {checkoutOpen && reviewQuote && reviewConnector && <div className="modal-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && setCheckoutOpen(false)}>
+        <section className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
+          <button className="modal-close" onClick={() => setCheckoutOpen(false)} aria-label="Close basket review">×</button>
+          <div className="checkout-heading">
+            <div><p className="eyebrow">Retailer checkout handoff</p><h2 id="checkout-title">Review {reviewQuote.retailer.name}</h2></div>
+            <span className="mock-badge">Mock connection</span>
+          </div>
+          <div className="checkout-warning"><strong>Development data only</strong><span>This quote is not from {reviewQuote.retailer.name}. No basket or payment will be sent.</span></div>
+          <div className="checkout-summary">
+            <div><span>Estimated total</span><strong>{euro.format(reviewQuote.total)}</strong></div>
+            <div><span>Availability</span><strong>{reviewQuote.matchedCount}/{items.length} items</strong></div>
+            <div><span>Quote captured</span><strong>{quoteCapturedAt?.toLocaleTimeString("en-IE", { hour: "2-digit", minute: "2-digit" })}</strong></div>
+            <div><span>Quote expires</span><strong>{quoteCapturedAt && new Date(quoteCapturedAt.getTime() + 15 * 60 * 1000).toLocaleTimeString("en-IE", { hour: "2-digit", minute: "2-digit" })}</strong></div>
+          </div>
+          <label className="slot-picker">Preferred delivery window<select value={deliverySlotId} onChange={(event) => setDeliverySlotId(event.target.value)}>{reviewConnector.getDeliverySlots().map((slot) => <option value={slot.id} key={slot.id}>{slot.label}</option>)}</select></label>
+          <div className="review-lines">{reviewQuote.lines.map((line) => <div key={line.item.id}><span>{line.item.quantity} × {line.item.name}<small>{line.item.substitution === "exact" ? "Exact only" : line.item.substitution === "none" ? "No substitution" : "Similar substitute allowed"}</small></span><strong>{line.status === "missing" ? "Unavailable" : euro.format(line.lineTotal)}</strong></div>)}</div>
+          {!signedIn && <p className="checkout-auth">Sign in from the top of the page before starting checkout. This keeps an audit trail tied to your account.</p>}
+          {checkoutError && <p className="form-error" role="alert">{checkoutError}</p>}
+          {handoff ? <div className="handoff-result"><strong>Checkout attempt recorded</strong><span>Reference {handoff.orderId.slice(-8)}. Your basket cannot yet be transferred.</span><a href={handoff.url} target="_blank" rel="noreferrer">Open {reviewQuote.retailer.name} to shop manually ↗</a></div> : <button className="checkout-button" onClick={startCheckout} disabled={!signedIn || checkoutBusy}>{checkoutBusy ? "Recording checkout…" : signedIn ? "Record checkout & continue" : "Sign in to continue"}</button>}
+          <p className="card-safety">Card details stay with the retailer. Grocery Pilot does not request or store card numbers.</p>
+        </section>
+      </div>}
       <footer><span>Grocery Pilot</span><p>Built to make the weekly shop calmer, clearer and more affordable.</p></footer>
     </main>
   );

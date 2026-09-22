@@ -8,9 +8,10 @@ type Props = {
   eircode: string;
   items: GroceryItem[];
   onRestore: (data: { eircode: string; items: GroceryItem[] }) => void;
+  onUserChange?: (signedIn: boolean) => void;
 };
 
-export function AccountPanel({ eircode, items, onRestore }: Props) {
+export function AccountPanel({ eircode, items, onRestore, onUserChange }: Props) {
   const [user, setUser] = useState<AccountUser | null>(null);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<"login" | "register">("register");
@@ -32,11 +33,12 @@ export function AccountPanel({ eircode, items, onRestore }: Props) {
       .then(async (data) => {
         if (!active || !data?.user) return;
         setUser(data.user);
+        onUserChange?.(true);
         await loadSavedList();
       })
       .catch(() => undefined);
     return () => { active = false; };
-  }, [loadSavedList]);
+  }, [loadSavedList, onUserChange]);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,6 +55,7 @@ export function AccountPanel({ eircode, items, onRestore }: Props) {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error ?? "Unable to continue.");
       setUser(data.user);
+      onUserChange?.(true);
       setOpen(false);
       if (mode === "login") await loadSavedList();
       else await saveList();
@@ -85,6 +88,7 @@ export function AccountPanel({ eircode, items, onRestore }: Props) {
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
+    onUserChange?.(false);
     setSavedAt(null);
   }
 
