@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "agent:tesco": "tsx agent/mcp-server.ts",
     "agent:tesco:smoke": "tsx agent/mcp-smoke.ts",
-    "agent:tesco:inspect": "npx @modelcontextprotocol/inspector npm run agent:tesco",
+    "agent:tesco:inspect": "npx @modelcontextprotocol/inspector@latest npm run agent:tesco",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio"

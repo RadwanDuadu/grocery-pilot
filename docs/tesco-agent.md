@@ -29,6 +29,8 @@ For interactive MCP inspection:
 npm run agent:tesco:inspect
 ```
 
+After the Inspector reports **Connected**, open **Tools** and select **List Tools**. Start with `tesco_open_login`, then `tesco_session_status`, and finally a read-only `tesco_search`. The project requests `@modelcontextprotocol/inspector@latest` explicitly to avoid a stale cached Inspector release. Inspector 2.8 requires Node 22.19 or newer; upgrade Node if npm reports an engine warning.
+
 Example MCP client configuration:
 
 ```json
